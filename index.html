@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hiring Management System - Fixed Version</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- PDF.js for PDF parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Mammoth.js for DOCX parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h2>HireAI Pro</h2>
+                </div>
+                <div class="theme-toggle" id="theme-toggle">
+                    <i data-lucide="sun" class="light-icon"></i>
+                    <i data-lucide="moon" class="dark-icon"></i>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" data-view="dashboard" class="nav-item active">
+                    <div class="nav-icon">
+                        <i data-lucide="bar-chart"></i>
+                    </div>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#" data-view="jobs" class="nav-item">
+                    <div class="nav-icon">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                    <span>Jobs</span>
+                </a></li>
+                <li><a href="#" data-view="candidates" class="nav-item">
+                    <div class="nav-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <span>Candidates</span>
+                </a></li>
+                <li><a href="#" data-view="resume-upload" class="nav-item">
+                    <div class="nav-icon">
+                        <i data-lucide="upload"></i>
+                    </div>
+                    <span>Resume Upload</span>
+                </a></li>
+                <li><a href="#" data-view="interviews" class="nav-item">
+                    <div class="nav-icon">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                    <span>Interviews</span>
+                </a></li>
+                <li><a href="#" data-view="analytics" class="nav-item">
+                    <div class="nav-icon">
+                        <i data-lucide="pie-chart"></i>
+                    </div>
+                    <span>Analytics</span>
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard" class="view active">
+                <div class="view-header">
+                    <div>
+                        <h1>Dashboard Overview</h1>
+                        <p>AI-powered hiring insights and metrics</p>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card gradient-1">
+                        <div class="metric-icon">
+                            <i data-lucide="briefcase"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="total-jobs">0</div>
+                            <div class="metric-label">Active Jobs</div>
+                        </div>
+                    </div>
+                    <div class="metric-card gradient-2">
+                        <div class="metric-icon">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="total-candidates">0</div>
+                            <div class="metric-label">Total Candidates</div>
+                        </div>
+                    </div>
+                    <div class="metric-card gradient-3">
+                        <div class="metric-icon">
+                            <i data-lucide="calendar"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="scheduled-interviews">0</div>
+                            <div class="metric-label">Scheduled Interviews</div>
+                        </div>
+                    </div>
+                    <div class="metric-card gradient-4">
+                        <div class="metric-icon">
+                            <i data-lucide="target"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="avg-match-score">0%</div>
+                            <div class="metric-label">Avg Match Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Candidate Pipeline</h3>
+                            <div class="card-icon">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="pipelineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Recent Applications</h3>
+                            <div class="card-icon">
+                                <i data-lucide="clock"></i>
+                            </div>
+                        </div>
+                        <div class="recent-applications" id="recent-applications"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs View -->
+            <div id="jobs" class="view">
+                <div class="view-header">
+                    <div>
+                        <h1>Job Management</h1>
+                        <p>Create and manage job postings</p>
+                    </div>
+                    <button class="btn-primary" onclick="showJobForm()">
+                        <i data-lucide="plus"></i>
+                        Create Job
+                    </button>
+                </div>
+                
+                <div class="jobs-grid" id="jobs-grid"></div>
+                
+                <!-- Job Form Modal -->
+                <div id="job-modal" class="modal hidden">
+                    <div class="modal-backdrop" onclick="hideJobForm()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="job-modal-title">Create New Job</h3>
+                            <button class="modal-close" onclick="hideJobForm()">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        <form id="job-form" class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Job Title</label>
+                                <input type="text" name="title" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Required Skills</label>
+                                <div id="skills-selector" class="skills-selector"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Experience Level</label>
+                                <select name="experience_level" class="form-control" required>
+                                    <option value="">Select Level</option>
+                                    <option value="Entry">Entry</option>
+                                    <option value="Mid-Level">Mid-Level</option>
+                                    <option value="Senior">Senior</option>
+                                    <option value="Lead">Lead</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Department</label>
+                                <input type="text" name="department" class="form-control" placeholder="e.g., Engineering">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <input type="text" name="location" class="form-control" placeholder="e.g., Remote, San Francisco">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-secondary" onclick="hideJobForm()">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Job</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidates View - FIXED CONTRAST -->
+            <div id="candidates" class="view">
+                <div class="view-header">
+                    <div>
+                        <h1>Candidate Management</h1>
+                        <p>Manage and track candidate applications</p>
+                    </div>
+                    <div class="view-filters">
+                        <select id="job-filter" class="form-control">
+                            <option value="">All Jobs</option>
+                        </select>
+                        <select id="status-filter" class="form-control">
+                            <option value="">All Statuses</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Screening">Screening</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Offer">Offer</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <button class="btn-primary" onclick="refreshCandidatesList()">
+                            <i data-lucide="refresh-cw"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="candidates-grid" id="candidates-grid"></div>
+                
+                <!-- Candidate Detail Modal -->
+                <div id="candidate-modal" class="modal hidden">
+                    <div class="modal-backdrop" onclick="hideCandidateModal()"></div>
+                    <div class="modal-content large">
+                        <div class="modal-header">
+                            <h3 id="candidate-modal-title">Candidate Details</h3>
+                            <button class="modal-close" onclick="hideCandidateModal()">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="candidate-details"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resume Upload View - ENHANCED -->
+            <div id="resume-upload" class="view">
+                <div class="view-header">
+                    <div>
+                        <h1>Resume Upload & Analysis</h1>
+                        <p>AI-powered resume parsing with real document extraction</p>
+                    </div>
+                    <div class="processing-status" id="processing-status">
+                        <div class="status-indicator">
+                            <i data-lucide="check-circle"></i>
+                            <span>Ready to process documents</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="upload-section">
+                    <div class="upload-area glass-card" id="upload-area">
+                        <div class="upload-icon">
+                            <i data-lucide="upload-cloud"></i>
+                        </div>
+                        <h3>Upload Resume Files</h3>
+                        <p>Upload PDF, DOCX, or DOC files for real-time text extraction</p>
+                        <p class="upload-subtitle">Supported formats: PDF, DOCX, DOC (Max 10MB per file)</p>
+                        <input type="file" id="file-input" accept=".pdf,.docx,.doc" style="display: none;" multiple>
+                        <button class="btn-primary" onclick="document.getElementById('file-input').click()">
+                            <i data-lucide="file-plus"></i>
+                            Choose Files
+                        </button>
+                        <div class="upload-progress" id="upload-progress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-text" id="progress-text">Processing...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Upload Results -->
+                    <div id="upload-results" class="upload-results">
+                        <div class="processing-tips" id="processing-tips">
+                            <h4><i data-lucide="lightbulb"></i> Processing Tips</h4>
+                            <ul>
+                                <li>Ensure resume files are clear and well-formatted</li>
+                                <li>PDF files with text (not scanned images) work best</li>
+                                <li>DOCX files provide highest extraction accuracy</li>
+                                <li>Review extracted data before saving candidates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interviews View - ENHANCED CONTRAST -->
+            <div id="interviews" class="view">
+                <div class="view-header">
+                    <div>
+                        <h1>Interview Scheduling</h1>
+                        <p>Manage interview schedules and calendar</p>
+                    </div>
+                </div>
+                
+                <div class="interview-section">
+                    <div class="glass-card calendar-container">
+                        <div class="card-header">
+                            <h3>Calendar</h3>
+                            <div class="calendar-nav">
+                                <button class="btn-icon" onclick="previousMonth()">
+                                    <i data-lucide="chevron-left"></i>
+                                </button>
+                                <h4 id="current-month"></h4>
+                                <button class="btn-icon" onclick="nextMonth()">
+                                    <i data-lucide="chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calendar-grid" class="calendar-grid"></div>
+                    </div>
+                    
+                    <div class="interview-sidebar">
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3>Upcoming Interviews</h3>
+                                <div class="card-icon">
+                                    <i data-lucide="clock"></i>
+                                </div>
+                            </div>
+                            <div id="upcoming-interviews"></div>
+                        </div>
+                        
+                        <button class="btn-primary full-width" onclick="showScheduleModal()">
+                            <i data-lucide="plus"></i>
+                            Schedule New Interview
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Schedule Interview Modal - ENHANCED CONTRAST -->
+                <div id="schedule-modal" class="modal hidden">
+                    <div class="modal-backdrop" onclick="hideScheduleModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Schedule Interview</h3>
+                            <button class="modal-close" onclick="hideScheduleModal()">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        <form id="schedule-form" class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Candidate</label>
+                                <select name="candidate_id" class="form-control candidate-select-enhanced" required id="candidate-select">
+                                    <option value="">Select Candidate</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Job Position</label>
+                                <select name="job_id" class="form-control" required id="job-select">
+                                    <option value="">Select Job</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date & Time</label>
+                                <input type="datetime-local" name="datetime" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Interviewer</label>
+                                <select name="interviewer" class="form-control" required>
+                                    <option value="">Select Interviewer</option>
+                                    <option value="John Smith">John Smith - Senior Engineering Manager</option>
+                                    <option value="Sarah Wilson">Sarah Wilson - Principal Engineer</option>
+                                    <option value="Mike Johnson">Mike Johnson - Data Science Lead</option>
+                                    <option value="Lisa Chen">Lisa Chen - DevOps Manager</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Interview Type</label>
+                                <select name="interview_type" class="form-control" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Technical">Technical</option>
+                                    <option value="Behavioral">Behavioral</option>
+                                    <option value="System Design">System Design</option>
+                                    <option value="Final Round">Final Round</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-secondary" onclick="hideScheduleModal()">Cancel</button>
+                                <button type="submit" class="btn-primary">Schedule Interview</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="analytics" class="view">
+                <div class="view-header">
+                    <div>
+                        <h1>Analytics & Reports</h1>
+                        <p>Hiring insights and performance metrics</p>
+                    </div>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Skills in Demand</h3>
+                            <div class="card-icon">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Application Sources</h3>
+                            <div class="card-icon">
+                                <i data-lucide="pie-chart"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="sourcesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Match Score Distribution</h3>
+                            <div class="card-icon">
+                                <i data-lucide="bar-chart"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="scoresChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Hiring Timeline</h3>
+                            <div class="card-icon">
+                                <i data-lucide="activity"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="timelineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3 id="confirmation-title">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmation-message">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="hideConfirmationModal()">Cancel</button>
+                <button type="button" class="btn-primary" id="confirmation-confirm" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Preview Modal -->
+    <div id="text-preview-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="hideTextPreviewModal()"></div>
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="preview-modal-title">Document Text Preview</h3>
+                <button class="modal-close" onclick="hideTextPreviewModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-preview-container">
+                    <div class="extraction-confidence">
+                        <span class="confidence-label">Extraction Confidence:</span>
+                        <span class="confidence-score" id="extraction-confidence">--</span>
+                    </div>
+                    <div class="text-content" id="preview-text-content">
+                        Loading document text...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="hideTextPreviewModal()">Close</button>
+                <button type="button" class="btn-primary" onclick="proceedWithExtraction()">Proceed with Extraction</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
