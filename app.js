@@ -546,8 +546,8 @@ class HiringManagementSystem {
         
         // Simulate extracted data
         const extractedData = {
-            name: { value: "Alex Johnson", confidence: 0.98 },
-            email: { value: "alex.johnson@email.com", confidence: 0.95 },
+            name: { value: "Mike Johnson", confidence: 0.98 },
+            email: { value: "mike.johnson@email.com", confidence: 0.95 },
             phone: { value: "(555) 123-4567", confidence: 0.92 },
             skills: { value: ["JavaScript", "React", "Node.js", "Python", "AWS", "Docker"], confidence: 0.88 },
             experience: { value: "5+ years", confidence: 0.85 },
