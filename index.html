@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hiring Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Hiring</span>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="jobs">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Jobs</span>
+                </a>
+                <a href="#" class="nav-item" data-section="candidates">
+                    <i class="fas fa-users"></i>
+                    <span>Candidates</span>
+                </a>
+                <a href="#" class="nav-item" data-section="resume-upload">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Resume Upload</span>
+                </a>
+                <a href="#" class="nav-item" data-section="interviews">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Interviews</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                    <p>System overview and recent activity</p>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="totalJobs">4</h3>
+                            <p>Total Jobs</p>
+                            <span class="metric-change positive">+2 this week</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="totalCandidates">5</h3>
+                            <p>Candidates</p>
+                            <span class="metric-change positive">+3 this week</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 id="totalInterviews">2</h3>
+                            <p>Scheduled Interviews</p>
+                            <span class="metric-change">This week</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>89.2%</h3>
+                            <p>Avg Match Score</p>
+                            <span class="metric-change positive">+5.2%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="recent-activity">
+                        <h2>Recent Activity</h2>
+                        <div class="activity-list" id="recentActivity">
+                            <!-- Activity items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="integration-status">
+                        <h2>Integration Status</h2>
+                        <div class="status-list" id="integrationStatus">
+                            <!-- Status items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jobs Section -->
+            <section id="jobs" class="content-section">
+                <div class="section-header">
+                    <h1>Jobs Management</h1>
+                    <p>Manage job postings and applications</p>
+                    <button class="btn btn--primary">
+                        <i class="fas fa-plus"></i>
+                        Create New Job
+                    </button>
+                </div>
+                
+                <div class="jobs-grid" id="jobsGrid">
+                    <!-- Job cards will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Candidates Section -->
+            <section id="candidates" class="content-section">
+                <div class="section-header">
+                    <h1>Candidates</h1>
+                    <p>View and manage candidate applications</p>
+                    <div class="filter-controls">
+                        <select class="form-control" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="candidates-table" id="candidatesTable">
+                    <!-- Candidates will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Resume Upload Section -->
+            <section id="resume-upload" class="content-section">
+                <div class="section-header">
+                    <h1>Resume Upload</h1>
+                    <p>Upload and parse candidate resumes</p>
+                </div>
+                
+                <div class="upload-container">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drop resume files here or click to browse</h3>
+                        <p>Supports PDF, DOC, DOCX files up to 10MB</p>
+                        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" hidden>
+                    </div>
+                    
+                    <div class="processing-animation hidden" id="processingAnimation">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p>Processing resume... <span id="progressText">0%</span></p>
+                    </div>
+                    
+                    <div class="extraction-results hidden" id="extractionResults">
+                        <h3>Extraction Results</h3>
+                        <div class="results-content" id="resultsContent">
+                            <!-- Results will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interviews Section -->
+            <section id="interviews" class="content-section">
+                <div class="section-header">
+                    <h1>Interview Scheduling</h1>
+                    <p>Schedule and manage candidate interviews</p>
+                    <button class="btn btn--primary" id="scheduleInterviewBtn">
+                        <i class="fas fa-calendar-plus"></i>
+                        Schedule Interview
+                    </button>
+                </div>
+                
+                <div class="interviews-container">
+                    <div class="calendar-view">
+                        <h3>Upcoming Interviews</h3>
+                        <div class="interviews-list" id="interviewsList">
+                            <!-- Interviews will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="interview-form-container">
+                        <div class="interview-form hidden" id="interviewForm">
+                            <h3>Schedule New Interview</h3>
+                            <form id="scheduleForm">
+                                <div class="form-group">
+                                    <label class="form-label">Candidate</label>
+                                    <select class="form-control" id="candidateSelect" required>
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Job Position</label>
+                                    <select class="form-control" id="jobSelect" required>
+                                        <option value="">Select Job</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Interviewer</label>
+                                    <select class="form-control" id="interviewerSelect" required>
+                                        <option value="">Select Interviewer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date & Time</label>
+                                    <input type="datetime-local" class="form-control" id="interviewDateTime" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Duration (minutes)</label>
+                                    <select class="form-control" id="interviewDuration">
+                                        <option value="30">30 minutes</option>
+                                        <option value="60" selected>60 minutes</option>
+                                        <option value="90">90 minutes</option>
+                                        <option value="120">120 minutes</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn--secondary" id="cancelSchedule">Cancel</button>
+                                    <button type="submit" class="btn btn--primary">Schedule Interview</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section">
+                <div class="section-header">
+                    <h1>Analytics Dashboard</h1>
+                    <p>Hiring insights and performance metrics</p>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="chart-container">
+                        <h3>Pipeline Conversion</h3>
+                        <canvas id="pipelineChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Skills Demand</h3>
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Department Hiring</h3>
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Match Score Distribution</h3>
+                        <canvas id="matchScoreChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Job Details -->
+    <div class="modal hidden" id="jobModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalJobTitle">Job Details</h2>
+                <button class="modal-close" id="closeJobModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="jobModalBody">
+                <!-- Job details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

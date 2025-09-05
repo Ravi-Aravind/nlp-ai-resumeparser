@@ -1,0 +1,22 @@
+{
+  "name": "ai-hiring-management-frontend",
+  "version": "2.1.0",
+  "description": "AI-powered hiring management system frontend",
+  "main": "app.js",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "build": "echo 'No build process needed for vanilla JS'",
+    "test": "echo 'Add tests here'"
+  },
+  "dependencies": {
+    "pdf.js": "^3.11.174",
+    "mammoth": "^1.6.0",
+    "chart.js": "^4.4.0",
+    "lucide": "latest"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
