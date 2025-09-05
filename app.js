@@ -550,7 +550,7 @@ class HiringManagementSystem {
             email: { value: "mike.johnson@email.com", confidence: 0.95 },
             phone: { value: "(555) 123-4567", confidence: 0.92 },
             skills: { value: ["JavaScript", "React", "Node.js", "Python", "AWS", "Docker"], confidence: 0.88 },
-            experience: { value: "5+ years", confidence: 0.85 },
+            experience: { value: "8+ years", confidence: 0.85 },
             education: { value: "Master of Computer Science", confidence: 0.90 }
         };
         
